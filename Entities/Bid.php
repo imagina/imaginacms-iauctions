@@ -3,33 +3,41 @@
 namespace Modules\Iauctions\Entities;
 
 use Modules\Core\Icrud\Entities\CrudModel;
-use Modules\Ifillable\Traits\isFillable;
+use Modules\Iauctions\Traits\Notificable;
+//Static Classes
 
+//Traits
+use Modules\Ifillable\Traits\isFillable;
+use Modules\Media\Support\Traits\MediaRelation;
 
 class Bid extends CrudModel
 {
-   
-    use isFillable;
+    use isFillable, Notificable, MediaRelation;
 
     protected $table = 'iauctions__bids';
+
     public $transformer = 'Modules\Iauctions\Transformers\BidTransformer';
+
+    public $repository = 'Modules\Iauctions\Repositories\BidRepository';
+
     public $requestValidation = [
         'create' => 'Modules\Iauctions\Http\Requests\CreateBidRequest',
         'update' => 'Modules\Iauctions\Http\Requests\UpdateBidRequest',
-      ];
-   
+    ];
+
     protected $fillable = [
         'auction_id',
+        'provider_id',
         'description',
         'amount',
         'points',
         'status',
-        'options'
+        'winner',
+        'options',
     ];
 
     protected $casts = ['options' => 'array'];
 
-    
     //============== RELATIONS ==============//
 
     public function auction()
@@ -37,8 +45,15 @@ class Bid extends CrudModel
         return $this->belongsTo(Auction::class);
     }
 
+    public function provider()
+    {
+        $driver = config('asgard.user.config.driver');
+
+        return $this->belongsTo("Modules\\User\\Entities\\{$driver}\\User", 'provider_id');
+    }
+
     //============== MUTATORS / ACCESORS ==============//
-    
+
     public function setOptionsAttribute($value)
     {
         $this->attributes['options'] = json_encode($value);
@@ -49,5 +64,10 @@ class Bid extends CrudModel
         return json_decode($value);
     }
 
-    
+    public function getStatusNameAttribute()
+    {
+        $status = new StatusBid();
+
+        return $status->get($this->status);
+    }
 }

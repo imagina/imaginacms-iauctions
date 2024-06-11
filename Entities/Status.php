@@ -2,21 +2,25 @@
 
 namespace Modules\Iauctions\Entities;
 
-
 class Status
 {
-    const INACTIVE = 0;
+    const PENDING = 0;
+
     const ACTIVE = 1;
+
     const FINISHED = 2;
-    
+
+    const CANCELED = 3;
+
     private $statuses = [];
 
     public function __construct()
     {
         $this->statuses = [
-            self::INACTIVE => trans('iauctions::auctions.status.inactive'),
+            self::PENDING => trans('iauctions::auctions.status.pending'),
             self::ACTIVE => trans('iauctions::auctions.status.active'),
             self::FINISHED => trans('iauctions::auctions.status.finished'),
+            self::CANCELED => trans('iauctions::auctions.status.canceled'),
         ];
     }
 
@@ -25,14 +29,12 @@ class Status
         return $this->statuses;
     }
 
-   
     public function get($statusId)
     {
         if (isset($this->statuses[$statusId])) {
             return $this->statuses[$statusId];
         }
 
-        return $this->statuses[self::INACTIVE];
+        return $this->statuses[self::PENDING];
     }
-    
 }

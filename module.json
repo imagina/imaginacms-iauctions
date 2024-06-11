@@ -4,13 +4,17 @@
     "version": "1.0.0",
 	"description": "",
     "keywords": [],
+    "active": 1,
     "priority": 1,
     "providers": [
         "Modules\\Iauctions\\Providers\\IauctionsServiceProvider",
         "Modules\\Iauctions\\Providers\\EventServiceProvider",
-        "Modules\\Iauctions\\Providers\\RouteServiceProvider"
+        "Modules\\Iauctions\\Providers\\RouteServiceProvider",
+        "Modules\\Iauctions\\Providers\\ScheduleServiceProvider"
     ],
     "aliases": {},
-    "files": [],
+    "files": [
+       "helpers.php"
+    ],
     "requires": []
 }

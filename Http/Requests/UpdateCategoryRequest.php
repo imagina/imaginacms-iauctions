@@ -3,12 +3,15 @@
 namespace Modules\Iauctions\Http\Requests;
 
 use Modules\Core\Internationalisation\BaseFormRequest;
+use Modules\Iauctions\Rules\ValidatePath;
 
 class UpdateCategoryRequest extends BaseFormRequest
 {
     public function rules()
     {
-        return [];
+        return [
+            'bid_service' => new ValidatePath,
+        ];
     }
 
     public function translationRules()
@@ -31,7 +34,8 @@ class UpdateCategoryRequest extends BaseFormRequest
         return [];
     }
 
-    public function getValidator(){
+    public function getValidator()
+    {
         return $this->getValidatorInstance();
     }
 }

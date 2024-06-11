@@ -4,22 +4,34 @@ namespace Modules\Iauctions\Entities;
 
 use Astrotomic\Translatable\Translatable;
 use Modules\Core\Icrud\Entities\CrudModel;
-use Modules\Iprofile\Entities\Department;
+use Modules\Iauctions\Traits\Notificable;
+//Static Classes
+
+//Traits
+use Modules\Icomments\Traits\Commentable;
+use Modules\Ifillable\Traits\isFillable;
+use Modules\Media\Support\Traits\MediaRelation;
 
 class Auction extends CrudModel
 {
-    use Translatable;
+  use isFillable, Translatable, Commentable, Notificable, MediaRelation;
 
     protected $table = 'iauctions__auctions';
+
     public $transformer = 'Modules\Iauctions\Transformers\AuctionTransformer';
+
+    public $repository = 'Modules\Iauctions\Repositories\AuctionRepository';
+
     public $requestValidation = [
         'create' => 'Modules\Iauctions\Http\Requests\CreateAuctionRequest',
         'update' => 'Modules\Iauctions\Http\Requests\UpdateAuctionRequest',
-      ];
+    ];
+
     public $translatedAttributes = [
         'title',
-        'description'
+        'description',
     ];
+
     protected $fillable = [
         'status',
         'type',
@@ -28,11 +40,11 @@ class Auction extends CrudModel
         'start_at',
         'end_at',
         'category_id',
-        'options'
+        'winner_id',
+        'options',
     ];
 
     protected $casts = ['options' => 'array'];
-
 
     //============== RELATIONS ==============//
 
@@ -40,6 +52,7 @@ class Auction extends CrudModel
     public function user()
     {
         $driver = config('asgard.user.config.driver');
+
         return $this->belongsTo("Modules\\User\\Entities\\{$driver}\\User");
     }
 
@@ -58,6 +71,13 @@ class Auction extends CrudModel
         return $this->hasMany(Bid::class);
     }
 
+    public function winner()
+    {
+        $driver = config('asgard.user.config.driver');
+
+        return $this->belongsTo("Modules\\User\\Entities\\{$driver}\\User", 'winner_id');
+    }
+
     //============== MUTATORS / ACCESORS ==============//
 
     public function setOptionsAttribute($value)
@@ -70,5 +90,31 @@ class Auction extends CrudModel
         return json_decode($value);
     }
 
+    public function getStatusNameAttribute()
+    {
+        $status = new Status();
 
+        return $status->get($this->status);
+    }
+
+    public function getTypeNameAttribute()
+    {
+        $type = new AuctionTypes();
+
+        return $type->get($this->type);
+    }
+
+    public function getIsAvailableAttribute()
+    {
+        $isAvailable = false;
+        $today = date('Y-m-d H:i:s');
+        //\Log::info("Today: ".$today);
+
+        //ACTIVE = 1 and Between Dates
+        if ($this->status == 1 && $this->start_at <= $today && $this->end_at >= $today) {
+            $isAvailable = true;
+        }
+
+        return $isAvailable;
+    }
 }

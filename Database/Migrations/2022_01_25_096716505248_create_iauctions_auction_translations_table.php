@@ -1,16 +1,14 @@
 <?php
 
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
 
-class CreateIauctionsAuctionTranslationsTable extends Migration
+return new class extends Migration
 {
     /**
      * Run the migrations.
-     *
-     * @return void
      */
-    public function up()
+    public function up(): void
     {
         Schema::create('iauctions__auction_translations', function (Blueprint $table) {
             $table->engine = 'InnoDB';
@@ -28,14 +26,12 @@ class CreateIauctionsAuctionTranslationsTable extends Migration
 
     /**
      * Reverse the migrations.
-     *
-     * @return void
      */
-    public function down()
+    public function down(): void
     {
         Schema::table('iauctions__auction_translations', function (Blueprint $table) {
             $table->dropForeign(['auction_id']);
         });
         Schema::dropIfExists('iauctions__auction_translations');
     }
-}
+};
